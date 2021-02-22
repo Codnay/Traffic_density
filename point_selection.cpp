@@ -6,9 +6,6 @@ using namespace cv;
 using namespace std;
 
 int main(){
-
-	
-
-
-
+	//tform = projective2d(H);
+	//outputImage = imwarp(I, tform);
 }
