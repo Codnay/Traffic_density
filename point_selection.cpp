@@ -5,23 +5,34 @@
 using namespace cv;
 using namespace std;
 
-vector<int> click_event(int event, int x, int y, int flag, void *param)
+void click_event(int event, int x, int y, int flag, void *param, vector<<pair<int, int>> p)
 {
-	if(event == EVENT_LBUTTONDOWN)
+	if(event == EVENT_LBUTTONDOWN || event == EVENT_RBUTTONDOWN || event == EVENT_MBUTTONDOWN)
 	{
-		pt.x = x;
-		pt.y = y;
+		pair<int, int> cop;
+		cop.first = x;
+		cop.second = y;
+		p.push_back(cop);
 		
 	}
+	return;
 }	
 int main(){
 	
 	Mat I = imread("", 1);
 	imshow("image", I);
-	setMouseCallback("image", click_event);
+	vector<pair<int, int>> pts_src;
+	vector<pair<int, int>> pts_dst;
+	for(int i = 0; i< 4; i++){
+		setMouseCallback("image", click_event);
+	}
 	waitkey(0);
 	destroyAllWindows();
 	
+	pts_dst.push_back({472,52});
+	pts_dst.push_back({472,830});
+	pts_dst.push_back({800,830});
+	pts_dst.push_back({800,52});
 	// pts_src and pts_dst are vectors of points in source
 	// and destination images. They are of type vector<Point2f>.
 	// We need at least 4 corresponding points.
