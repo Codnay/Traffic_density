@@ -1,48 +1,53 @@
 #include <stdio.h> 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include<bits/stdc++.h>
+#include <vector>
 
 using namespace cv;
 using namespace std;
 
-void click_event(int event, int x, int y, int flag, void *param, vector<<pair<int, int>> p)
+vector<Point2f> pts_src(4);
+int i = 0;
+
+void click_event(int event, int x, int y, int flag, void *param)
 {
 	if(event == EVENT_LBUTTONDOWN || event == EVENT_RBUTTONDOWN || event == EVENT_MBUTTONDOWN)
-	{
-		pair<int, int> cop;
-		cop.first = x;
-		cop.second = y;
-		p.push_back(cop);
-		
+	{	
+		pts_src[i] = Point2f(x,y);
+		i++;
 	}
 	return;
 }	
 int main(){
 	
-	Mat I = imread("", 1);
-	imshow("image", I);
-	vector<pair<int, int>> pts_src;
-	vector<pair<int, int>> pts_dst;
-	for(int i = 0; i< 4; i++){
-		setMouseCallback("image", click_event);
-	}
-	waitkey(0);
-	destroyAllWindows();
+	Mat I = imread("/home/tushar/Downloads/COP290_PROJECT_1/empty_projected.jpg");
+	imshow("InputImage", I);
+
 	
-	pts_dst.push_back({472,52});
-	pts_dst.push_back({472,830});
-	pts_dst.push_back({800,830});
-	pts_dst.push_back({800,52});
-	// pts_src and pts_dst are vectors of points in source
-	// and destination images. They are of type vector<Point2f>.
-	// We need at least 4 corresponding points.
+	for(int j = 0; j< 4; j++){
+		setMouseCallback("InputImage", click_event);
+		waitKey(0);
+	}
+
+	vector<Point2f> pts_dst(4);
+	pts_dst[0] = Point2f(472,52);
+	pts_dst[1] = Point2f(472,830);
+	pts_dst[2] = Point2f(800,830);
+	pts_dst[3] = Point2f(800,52);
+
 	Mat h = findHomography(pts_src, pts_dst);
-	// The calculated homography can be used to warp
-	// the source image to destination. im_src and im_dst are
-	// of type Mat. Size is the size (width,height) of im_dst.
-	//warpPerspective(im_src, im_dst, h, size);
+	
+	Mat Rin;
+	Rin = Mat::zeros(I.rows, I.cols, I.type());
+	warpPerspective(I,Rin,h,I.size());
+	//imshow("image",Rin);
+	//waitKey(0);
 
-
-	tform = projective2d(h);
-	outputImage = imwarp(I, tform);
+	Mat ROI(Rin, Rect(472,52,328,778));
+	Mat croppedImage;
+	// Copy the data into new matrix
+	ROI.copyTo(croppedImage);
+	imshow("FinalImage.png",croppedImage);
+	waitKey(0);
 }
