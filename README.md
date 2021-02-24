@@ -6,10 +6,11 @@ To compile your file
 To run the compiled file
 ```make run```
 
-To remove the generated files
-```make clean```
-
-##Enter the name of the of the input image existing in the same directory after using make all and make run
+## Enter the name of the of the input image existing in the same directory after using make all and make run commands.
+## The image must be present in the same directory in which the a1_part1.cpp and makefile are present.
 
 ## Instructions after running the make command and inputting the image name:
-## Select 4 points in an anti-clockwise fashion starting from the left upper corner with the right aur left mouse click and press enter to get the final cropped image
+## Select 4 points, in the popped up image window, in an anti-clockwise fashion starting from the left-upper corner, with the right or left mouse click and then press enter to get the final cropped image.
+
+To remove the generated files
+```make clean```
