@@ -1,7 +1,7 @@
 ## Using the makefile
 ``` ```
 
-# To compile the files
+##To compile the files
 
 ``` ```
 
