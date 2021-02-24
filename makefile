@@ -9,5 +9,4 @@ run:
 	./$(TARGET)
 clean:
 	$(RM) $(TARGET)
-
-	
+.PHONY: clean
