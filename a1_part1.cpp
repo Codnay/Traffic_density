@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include<bits/stdc++.h>
 #include <vector>
+#include <opencv2/imgproc/imgproc.hpp>
 
 using namespace cv;
 using namespace std;
@@ -22,7 +23,7 @@ void click_event(int event, int x, int y, int flag, void *param)
 int main(){
 	string InputImage;
 	cin >> InputImage;
-	Mat I = imread(InputImage);
+	Mat I = imread(InputImage, IMREAD_GRAYSCALE);
 	imshow("InputImage", I);
 
 	
@@ -30,6 +31,7 @@ int main(){
 		setMouseCallback("InputImage", click_event);
 	}
 	waitKey(0);
+
 
 	vector<Point2f> pts_dst(4);
 	pts_dst[0] = Point2f(472,52);
