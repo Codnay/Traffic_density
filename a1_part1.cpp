@@ -20,15 +20,16 @@ void click_event(int event, int x, int y, int flag, void *param)
 	return;
 }	
 int main(){
-	
-	Mat I = imread("/home/tushar/Downloads/COP290_PROJECT_1/empty_projected.jpg");
+	string InputImage;
+	cin >> InputImage;
+	Mat I = imread(InputImage);
 	imshow("InputImage", I);
 
 	
 	for(int j = 0; j< 4; j++){
 		setMouseCallback("InputImage", click_event);
-		waitKey(0);
 	}
+	waitKey(0);
 
 	vector<Point2f> pts_dst(4);
 	pts_dst[0] = Point2f(472,52);
@@ -41,13 +42,15 @@ int main(){
 	Mat Rin;
 	Rin = Mat::zeros(I.rows, I.cols, I.type());
 	warpPerspective(I,Rin,h,I.size());
-	//imshow("image",Rin);
-	//waitKey(0);
+	imwrite("Transformed.jpg", Rin);
+	imshow("Transformed",Rin);
+	waitKey(0);
 
 	Mat ROI(Rin, Rect(472,52,328,778));
 	Mat croppedImage;
 	// Copy the data into new matrix
 	ROI.copyTo(croppedImage);
-	imshow("FinalImage.png",croppedImage);
+	imwrite("Final_cropped.jpg", croppedImage);
+	imshow("Final_cropped",croppedImage);
 	waitKey(0);
 }
