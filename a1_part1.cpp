@@ -3,7 +3,6 @@
 #include <opencv2/opencv.hpp>
 #include<bits/stdc++.h>
 #include <vector>
-#include <opencv2/imgproc/imgproc.hpp>
 
 using namespace cv;
 using namespace std;
