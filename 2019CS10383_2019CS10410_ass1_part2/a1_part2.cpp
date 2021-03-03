@@ -7,7 +7,7 @@
 using namespace cv;
 using namespace std;
 
-vector<Point2f> pts_src(4);
+/*vector<Point2f> pts_src(4);
 int i = 0;
 
 void click_event(int event, int x, int y, int flag, void *param)
@@ -18,7 +18,7 @@ void click_event(int event, int x, int y, int flag, void *param)
 		i++;
 	}
 	return;
-}	
+}*/	
 int main(){
 	string InputImage;
 	cin >> InputImage;
