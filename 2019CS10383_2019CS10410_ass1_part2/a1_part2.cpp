@@ -22,6 +22,7 @@ void click_event(int event, int x, int y, int flag, void *param)
 int main(){
 	string InputImage;
 	cin >> InputImage;
+	int video_start= 0;
 	VideoCapture cap(InputImage);
 	if(!cap.isOpened()){
 		cout << "Error loading the file"<< endl;
@@ -29,25 +30,31 @@ int main(){
 	}
 
 	while(1){
-		Mat frame;
-		cap >> frame;
-		imshow("Frame", frame);
+		if(video_start%3==0){
+			Mat frame;
+			cap >> frame;
+			imshow("Frame", frame);
+		}
+
+
 		char c= (char)waitKey(25);
-		if(c==27)
+		if(c==27){
 			break;
+		}
+		video_start= video_start+1;
 	}
 	cap.release();
 	destroyAllWindows();
 	return 0;
 
 	
-	/*for(int j = 0; j< 4; j++){
+	for(int j = 0; j< 4; j++){
 		setMouseCallback("InputImage", click_event);
 	}
 	waitKey(0);
 
 
-	vector<Point2f> pts_dst(4);
+	/*vector<Point2f> pts_dst(4);
 	pts_dst[0] = Point2f(472,52);
 	pts_dst[1] = Point2f(472,830);
 	pts_dst[2] = Point2f(800,830);
