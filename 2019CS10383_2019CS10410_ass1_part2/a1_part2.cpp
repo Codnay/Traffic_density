@@ -1,6 +1,3 @@
-#include <stdio.h> 
-#include <iostream>
-#include <fstream>
 #include <opencv2/opencv.hpp>
 #include <bits/stdc++.h>
 #include <vector>
@@ -21,7 +18,7 @@ int main(){
 	cin >> InputVideo;
 	int video_start= 0;
 
-	ofstream fout ("output.csv");
+	ofstream fout ("out.txt");
 	fout << "framenum" << "," << "queue density" << "," << "dynamic density" <<"\n";
 
 	VideoCapture cap(InputVideo);
@@ -81,11 +78,11 @@ int main(){
 	cap.release();
 	destroyAllWindows();
 
-	cout << "framenum" << " " << "queue density" << " " << "dynamic density" <<"\n";
+	cout << "time (in secs)" << ", " << "queue density" << ", " << "dynamic density" <<"\n";
 
 	for(int k = 0; k < frame_number.size(); k++){
-		cout << frame_number[k] << " " << queue_density[k] << " " << dynamic_density[k] << "\n";
-		fout << frame_number[k]/15.0 << "," << queue_density[k] << "," << dynamic_density[k] << "\n";
+		cout << frame_number[k]/15.0 << ", " << queue_density[k] << ", " << dynamic_density[k] << "\n";
+		fout << frame_number[k] << "," << queue_density[k] << "," << dynamic_density[k] << "\n";
 	}
 
 	fout.close();
