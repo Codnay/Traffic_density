@@ -111,9 +111,12 @@ int main(){
 
 	vector<vector<int> > c;
 
+	int total=0;
+
 	for(int i= 0; i<second.size(); i++){
 		
 		int k= sqdiff(a[i][1], b[i][1]);
+		total+=k;
 
 		vector<int> rand;
 		rand.push_back(a[i][0]);
@@ -123,6 +126,8 @@ int main(){
 	}
 
 	print(c);
+
+	cout << pow((double)total/c.size(), 0.5) << endl;
 
 	return 0;
 
