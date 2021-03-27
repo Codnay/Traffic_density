@@ -64,8 +64,6 @@ int main(){
 
 		frame_number.push_back(video_start+1);
 
-
-		iterator++;
 		video_start= video_start+1;
 		char c= (char)waitKey(25);
 		if(c==27 || video_start == 5722){
