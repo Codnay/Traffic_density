@@ -5,32 +5,32 @@
 #include <bits/stdc++.h>
 #include <vector>
 #include "helper.cpp"
+#include <thread>
 
 using namespace cv;
 using namespace std;
 
-Mat resize(Mat img){
 
-	Mat res = cv2.resize(img, (img.shape[1]/2, img.shape[0]/2), interpolation=INTER_AREA);
-	return res;
+//This code would not work because we are passing by value but some
+//basic edits would fix this, would have to run and see
 
-}
 
-int main(){
-	time_t start, end;
-	time(&start);
+
+void imgcalc(int thread_count, int thread_num){
 	
 
 	Mat I = imread("empty.jpg", IMREAD_GRAYSCALE);
 	Mat O = resize(calc(I));
 
 
-
 	vector<double> queue_density;
 	vector<int> frame_number;
 
-	string InputVideo;
-	cin >> InputVideo;
+
+	//Note that this is hard coded for now, to change this 
+	//we will have to pass an extra string argument in imgcalc
+	string InputVideo= "trafficvideo.mp4";
+
 	int video_start= 0;
 
 	ofstream fout ("out.txt");
@@ -39,10 +39,12 @@ int main(){
 	VideoCapture cap(InputVideo);
 	if(!cap.isOpened()){
 		cout << "Error loading the file"<< endl;
-		return -1;
+		return;
 	}
 
 	while(1){
+
+		if(video_start%thread_count== thread_num){
 
 
 		Mat frame,edges;
@@ -61,8 +63,11 @@ int main(){
 
 		queue_density.push_back(density(out_frame, O, 25));
 
+		
 
 		frame_number.push_back(video_start+1);
+
+		}
 
 
 		iterator++;
@@ -85,10 +90,33 @@ int main(){
 
 	fout.close();
 
+}
+
+int main(){
+	time_t start, end;
+	time(&start);
+
+	//Using 4 threads in our code
+	int thread_tot= 4;
+	vector<int> thread_count;
+
+	for(int i=0 ; i< thread_tot; i++){
+		thread_count.push_back(i);
+	}
+
+	thread t1(imgcalc, thread_tot, thread_count[0]);
+	thread t2(imgcalc, thread_tot, thread_count[1]);
+	thread t3(imgcalc, thread_tot, thread_count[2]);
+	thread t4(imgcalc, thread_tot, thread_count[3]);
+
+	t1.join();
+	t2.join();
+	t3.join();
+	t4.join();
+
 	time(&end);
 	double time_taken = double(end - start); 
     cout << "Time taken by program is : " << fixed 
          << time_taken << setprecision(5); 
     cout << " sec " << endl;
-	return 0;
 }
