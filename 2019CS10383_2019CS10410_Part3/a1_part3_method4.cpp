@@ -57,7 +57,7 @@ void imgcalc(int thread_count, int thread_num){
 		Mat out_frame;
 		//imshow("Frame", frame);
 		//waitKey(10);
-		out_frame= resize(calc(frame));
+		out_frame= calc(frame);
 		//imshow("Frame", out_frame);
 		//waitKey(200);
 
