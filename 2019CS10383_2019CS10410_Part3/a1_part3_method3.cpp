@@ -116,8 +116,6 @@ void imgcalc(int thread_count, int thread_num){
 
 		}
 
-
-		iterator++;
 		video_start= video_start+1;
 		char c= (char)waitKey(25);
 		if(c==27 || video_start == 5722){
