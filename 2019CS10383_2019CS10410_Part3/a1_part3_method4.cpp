@@ -20,7 +20,7 @@ void imgcalc(int thread_count, int thread_num){
 	
 
 	Mat I = imread("empty.jpg", IMREAD_GRAYSCALE);
-	Mat O = resize(calc(I));
+	Mat O = calc(I);
 
 
 	vector<double> queue_density;
