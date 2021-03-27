@@ -67,7 +67,7 @@ void imgcalc(int thread_count, int thread_num){
 	
 
 	Mat I = imread("empty.jpg", IMREAD_GRAYSCALE);
-	Mat O = resize(calc(I));
+	Mat O = calc(I);
 
 
 	vector<double> queue_density;
@@ -104,7 +104,7 @@ void imgcalc(int thread_count, int thread_num){
 		Mat out_frame;
 		//imshow("Frame", frame);
 		//waitKey(10);
-		out_frame= resize(calc(frame));
+		out_frame= calc(frame);
 		//imshow("Frame", out_frame);
 		//waitKey(200);
 
@@ -116,8 +116,6 @@ void imgcalc(int thread_count, int thread_num){
 
 		}
 
-
-		iterator++;
 		video_start= video_start+1;
 		char c= (char)waitKey(25);
 		if(c==27 || video_start == 5722){
