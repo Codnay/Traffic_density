@@ -11,7 +11,7 @@ using namespace std;
 
 Mat resize(Mat img){
 
-	Mat res = cv2.resize(img, (img.shape[1]/2, img.shape[0]/2), interpolation=INTER_AREA);
+	Mat res = cv2.resize(img, (160, 240));
 	return res;
 
 }
