@@ -11,7 +11,8 @@ using namespace std;
 
 Mat resize(Mat img){
 
-	Mat res = cv2.resize(img, (160, 240));
+	Mat res;
+	resize(img, res, Size(160,240), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution;
 	return res;
 
 }
@@ -25,7 +26,6 @@ int main(){
 	Mat O = resize(calc(I));
 
 
-
 	vector<double> queue_density;
 	vector<int> frame_number;
 
@@ -33,7 +33,7 @@ int main(){
 	cin >> InputVideo;
 	int video_start= 0;
 
-	ofstream fout ("out.txt");
+	ofstream fout ("out_method2_160_240.txt");
 	fout << "framenum" << "," << "queue density" <<"\n";
 
 	VideoCapture cap(InputVideo);
