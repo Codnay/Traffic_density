@@ -24,7 +24,7 @@ int main(){
 	cin >> InputVideo;
 	int video_start= 0;
 
-	ofstream fout ("out.txt");
+	ofstream fout ("out_method1_x8.txt");
 	fout << "framenum" << "," << "queue density" <<"\n";
 
 	VideoCapture cap(InputVideo);
@@ -33,7 +33,7 @@ int main(){
 		return -1;
 	}
 
-	int x = 3;
+	int x = 8;
 	int iterator = 0;
 
 	while(1){
@@ -75,7 +75,7 @@ int main(){
 	cap.release();
 	destroyAllWindows();
 
-	cout << "time (in secs)" << ", " << "queue density" <<"\n";
+	//cout << "time (in secs)" << ", " << "queue density" <<"\n";
 
 	for(int k = 0; k < frame_number.size(); k++){
 		//cout << frame_number[k]/15.0 << ", " << queue_density[k] << "\n";
