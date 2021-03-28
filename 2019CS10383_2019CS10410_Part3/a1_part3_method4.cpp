@@ -12,20 +12,17 @@ using namespace std;
 
 
 int thread_tot= 4;
-ofstream fout ("out_method4_t4_2.txt");
+
 Mat I,O;
 
 
 struct thread_number_container
 {
 	int number;
+	vector<vector<double>> file_data;
 };
 
 void* imgcalc(void* arg){
-
-	vector<double> queue_density;
-	vector<int> frame_number;
-
 
 	struct thread_number_container *arg_struct = (struct thread_number_container*) arg;
 	//Note that this is hard coded for now, to change this 
@@ -59,11 +56,11 @@ void* imgcalc(void* arg){
 			//imshow("Frame", out_frame);
 			//waitKey(200);
 
-			queue_density.push_back(density(out_frame, O, 25));
+			vector<double> v;
+			v.push_back((double)video_start+1);
+			v.push_back(density(out_frame, O, 25));
 
-			
-
-			frame_number.push_back(video_start+1);
+			arg_struct->file_data.push_back(v);
 
 		}
 
@@ -79,10 +76,10 @@ void* imgcalc(void* arg){
 
 	cout << "Thread :" << arg_struct->number << " finished" <<"\n";
 
-	for(int k = 0; k < frame_number.size(); k++){
+	/*for(int k = 0; k < frame_number.size(); k++){
 		//cout << frame_number[k]/15.0 << ", " << queue_density[k] << "\n";
 		fout << frame_number[k] << "," << queue_density[k]  << "\n";
-	}
+	}*/
 
 	pthread_exit(0);
 }
@@ -100,8 +97,6 @@ int main(){
 
 	I = imread("empty.jpg", IMREAD_GRAYSCALE);
 	O = calc(I);
-
-	fout << "framenum" << "," << "queue density" <<"\n";
 
 	pthread_t tids[thread_tot];
 	for (int i = 0; i < thread_tot; ++i)
@@ -126,6 +121,19 @@ int main(){
 	for (int i = 0; i < thread_tot; ++i)
 	{
 		pthread_join(tids[i], NULL);
+	}
+
+
+	ofstream fout ("out_method4_t4_2.txt");
+	fout << "framenum" << "," << "queue density" <<"\n";
+	
+	for (int i = 0; i < thread_tot; ++i)
+	{
+		vector<vector<double>> x = args[i].file_data;
+		for (int j = 0; j < x.size(); ++j)
+		{
+			fout << x[j][0] << "," << x[j][1] << "\n";
+		}
 	}
 
 
