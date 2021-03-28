@@ -13,8 +13,8 @@ using namespace std;
 //The given code reads the values of frame numbers from 2 files and 
 //outputs the corresponding utility
 
-int sqdiff(int a, int b){
-	return (int)(pow(a-b,2)+0.5);
+int sqdiff(double a, double b){
+	return (pow(a-b,2));
 }
 
 int str_to_int(string s){
@@ -59,48 +59,48 @@ int main(){
 
 	myfile.close();
 
-	vector<vector<int> > a;
-	vector<vector<int> > b;
+	vector<vector<double> > a;
+	vector<vector<double> > b;
 
-	for(int i= 0; i<first.size(); i++){
+	for(int i= 1; i<first.size(); i++){
 		int temp=0;
 
-		while(first[i][temp] != ' '){
+		while(temp < second[i].size() && first[i][temp] != ','){
 			temp+=1;
 		}
 
 		int helper= temp+1;
 		int help= temp+1;
 
-		while(first[i][temp] != ' '){
+		while(help < second[i].size() && first[i][help] != '\t'){
 			help+=1;
 		}
 
-		vector<int> rand;
-		rand.push_back(str_to_int(first[i].substr(0,temp)));
-		rand.push_back(str_to_int(first[i].substr(helper, help)));
+		vector<double> rand;
+		rand.push_back(stod(first[i].substr(0,temp)));
+		rand.push_back(stod(first[i].substr(helper, help)));
 		a.push_back(rand);
 
 
 	}
 
-	for(int i= 0; i<second.size(); i++){
+	for(int i= 1; i<second.size(); i++){
 		int temp=0;
 
-		while(second[i][temp] != ' '){
+		while(temp < second[i].size() && second[i][temp] != ','){
 			temp+=1;
 		}
 
 		int helper= temp+1;
 		int help= temp+1;
 
-		while(second[i][temp] != ' '){
+		while(help < second[i].size() && second[i][help] != '\t'){
 			help+=1;
 		}
 
-		vector<int> rand;
-		rand.push_back(str_to_int(second[i].substr(0,temp)));
-		rand.push_back(str_to_int(second[i].substr(helper, help)));
+		vector<double> rand;
+		rand.push_back(stod(second[i].substr(0,temp)));
+		rand.push_back(stod(second[i].substr(helper, help)));
 		b.push_back(rand);
 
 
@@ -109,25 +109,23 @@ int main(){
 	sort(a.begin(), a.end());
 	sort(b.begin(), b.end());
 
-	vector<vector<int> > c;
+	//vector<vector<int> > c;
 
-	int total=0;
-
-	for(int i= 0; i<second.size(); i++){
+	double total=0.0;
+	for(int i= 0; i<second.size()-1; i++){
 		
-		int k= sqdiff(a[i][1], b[i][1]);
-		total+=k;
+		//cout<< a[i][1] << " " << b[i][1] << endl;
+		total+=  (a[i][1] - b[i][1])*(a[i][1] - b[i][1]);
 
-		vector<int> rand;
-		rand.push_back(a[i][0]);
-		rand.push_back(k);
-		c.push_back(rand);
+		//vector<int> rand;
+		//rand.push_back(a[i][0]);
+		//rand.push_back(k);
+		//c.push_back(rand);
 
 	}
 
-	print(c);
-
-	cout << pow((double)total/c.size(), 0.5) << endl;
+	//print(c);
+	cout << pow((double)total/(second.size()-1), 0.5) << endl;
 
 	return 0;
 
