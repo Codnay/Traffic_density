@@ -34,7 +34,7 @@ double density(Mat img1, Mat img2, int th){
 	return(nz);
 }
 
-Mat calc(Mat I){
+Mat calc(Mat I ){
 	
 	vector<Point2f> pts_src(4);
 
