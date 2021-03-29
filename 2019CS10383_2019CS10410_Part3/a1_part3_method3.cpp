@@ -2,25 +2,23 @@
 #include <iostream>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 #include <vector>
-#include <thread>
+#include "helper.cpp"
+#include <pthread.h>
 
 using namespace cv;
 using namespace std;
 
 
+int thread_tot= 3;
 
-//This code would not work because we are passing by value but some
-//basic edits would fix this, would have to run and see
+Mat I,O;
 
-//Basic feel is that we need to split the images into different parts
-//both for homography and density calculation and get the final results
-
-double density(Mat img1, Mat img2, int th){
+double density_total(Mat img1, Mat img2, int th, int total, int k){
 
 	double nz = 0.0;
-	for(int j=0; j<img1.rows; j++) {
+	for(int j= (img1.rows*k)/total; j<(img1.rows*(k+1))/total; j++) {
         for(int i=0; i<img1.cols; i++){
             int pix = img1.at<uchar>(j,i);
             int pix1 = img2.at<uchar>(j,i);
@@ -34,67 +32,38 @@ double density(Mat img1, Mat img2, int th){
 	return(nz);
 }
 
-Mat calc(Mat I ){
-	
-	vector<Point2f> pts_src(4);
+struct thread_number_container
+{
+	int number;
+	vector<vector<double>> file_data;
+};
 
-	pts_src[0] = Point2f(989,218);
-	pts_src[1] = Point2f(522,980);
-	pts_src[2] = Point2f(1542,990);
-	pts_src[3] = Point2f(1270,214);
+void* imgcalc(void* arg){
 
-	vector<Point2f> pts_dst(4);
-	pts_dst[0] = Point2f(472,52);
-	pts_dst[1] = Point2f(472,830);
-	pts_dst[2] = Point2f(800,830);
-	pts_dst[3] = Point2f(800,52);
-
-	Mat h = findHomography(pts_src, pts_dst);
-	
-	Mat Rin;
-	Rin = Mat::zeros(I.rows, I.cols, I.type());
-	warpPerspective(I,Rin,h,I.size());
-
-	Mat ROI(Rin, Rect(472,52,328,778));
-	Mat croppedImage;
-	// Copy the data into new matrix
-	ROI.copyTo(croppedImage);
-	
-	return croppedImage;
-}
-
-void imgcalc(int thread_count, int thread_num){
-	
-
-	Mat I = imread("empty.jpg", IMREAD_GRAYSCALE);
-	Mat O = calc(I);
-
-
-	vector<double> queue_density;
-	vector<int> frame_number;
-
-
+	struct thread_number_container *arg_struct = (struct thread_number_container*) arg;
 	//Note that this is hard coded for now, to change this 
 	//we will have to pass an extra string argument in imgcalc
 	string InputVideo= "trafficvideo.mp4";
+	cout << "Thread :" << arg_struct->number << " started" <<"\n";
+
 
 	int video_start= 0;
-
-	ofstream fout ("out.txt");
-	fout << "framenum" << "," << "queue density" <<"\n";
 
 	VideoCapture cap(InputVideo);
 	if(!cap.isOpened()){
 		cout << "Error loading the file"<< endl;
-		return;
+		exit(1);
 	}
 
 	while(1){
 
-		if(video_start%thread_count== thread_num){
 
+		
+		//cout << "Thread :" << arg_struct->number << " in process" <<"\n";
+		//cout<<"Framing number:   ";
 
-		Mat frame,edges;
+		Mat frame;
+		Mat edges;
 		cap >> edges;
 
 
@@ -108,17 +77,17 @@ void imgcalc(int thread_count, int thread_num){
 		//imshow("Frame", out_frame);
 		//waitKey(200);
 
-		queue_density.push_back(density(out_frame, O, 25));
+		vector<double> v;
+		v.push_back((double)video_start+1);
 
-		
+		v.push_back(density_total(out_frame, O, 25, thread_tot, arg_struct->number));
 
-		frame_number.push_back(video_start+1);
+		arg_struct->file_data.push_back(v);
 
-		}
 
 		video_start= video_start+1;
 		char c= (char)waitKey(25);
-		if(c==27 || video_start == 5722){
+		if(c==27 || video_start == 50){
 			break;
 		}
 		
@@ -126,30 +95,40 @@ void imgcalc(int thread_count, int thread_num){
 	cap.release();
 	destroyAllWindows();
 
-	cout << "time (in secs)" << ", " << "queue density" <<"\n";
+	cout << "Thread :" << arg_struct->number << " finished" <<"\n";
 
-	for(int k = 0; k < frame_number.size(); k++){
+	/*for(int k = 0; k < frame_number.size(); k++){
 		//cout << frame_number[k]/15.0 << ", " << queue_density[k] << "\n";
 		fout << frame_number[k] << "," << queue_density[k]  << "\n";
-	}
+	}*/
 
-	fout.close();
-
+	pthread_exit(0);
 }
 
 int main(){
 	time_t start, end;
 	time(&start);
-
-	//Using 4 threads in our code
-	int thread_tot= 4;
-	vector<int> thread_count;
+	
+	/*vector<int> thread_count;
 
 	for(int i=0 ; i< thread_tot; i++){
 		thread_count.push_back(i);
+	}*/
+	struct thread_number_container args[thread_tot];
+
+	I = imread("empty.jpg", IMREAD_GRAYSCALE);
+	O = calc(I);
+
+	pthread_t tids[thread_tot];
+	for (int i = 0; i < thread_tot; ++i)
+	{
+		args[i].number = i;
+		pthread_attr_t attr;
+		pthread_attr_init(&attr);
+		pthread_create(&tids[i], &attr, imgcalc, &args[i]);
 	}
 
-	thread t1(imgcalc, thread_tot, thread_count[0]);
+	/*thread t1(imgcalc, thread_tot, thread_count[0]);
 	thread t2(imgcalc, thread_tot, thread_count[1]);
 	thread t3(imgcalc, thread_tot, thread_count[2]);
 	thread t4(imgcalc, thread_tot, thread_count[3]);
@@ -158,6 +137,34 @@ int main(){
 	t2.join();
 	t3.join();
 	t4.join();
+	*/
+
+	for (int i = 0; i < thread_tot; ++i)
+	{
+		pthread_join(tids[i], NULL);
+	}
+
+
+	ofstream fout ("out_method3_thread3.txt");
+	fout << "framenum" << "," << "queue density" <<"\n";
+
+	vector<vector<double>> x= args[0].file_data;
+	
+	for (int j = 0; j < x.size(); ++j)
+	{	
+		double sum= 0;
+		for(int i=0; i<thread_tot; i++){
+
+			sum= sum+ args[i].file_data[j][1];
+		
+		}
+		sum= sum/ (O.rows*O.cols);
+
+		fout << x[j][0] << "," << sum << "\n";
+	}
+
+
+	fout.close();
 
 	time(&end);
 	double time_taken = double(end - start); 
