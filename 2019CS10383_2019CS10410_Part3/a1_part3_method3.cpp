@@ -13,6 +13,8 @@ using namespace std;
 
 int thread_tot= 3;
 
+vector<Mat> outstream;
+
 Mat I,O;
 
 double density_total(Mat img1, Mat img2, int th, int total, int k){
@@ -43,57 +45,26 @@ void* imgcalc(void* arg){
 	struct thread_number_container *arg_struct = (struct thread_number_container*) arg;
 	//Note that this is hard coded for now, to change this 
 	//we will have to pass an extra string argument in imgcalc
-	string InputVideo= "trafficvideo.mp4";
-	cout << "Thread :" << arg_struct->number << " started" <<"\n";
 
 
-	int video_start= 0;
-
-	VideoCapture cap(InputVideo);
-	if(!cap.isOpened()){
-		cout << "Error loading the file"<< endl;
-		exit(1);
-	}
-
-	while(1){
+	int video_frame= 0;
 
 
-		
-		//cout << "Thread :" << arg_struct->number << " in process" <<"\n";
-		//cout<<"Framing number:   ";
+	while(video_frame < 5722){
 
-		Mat frame;
-		Mat edges;
-		cap >> edges;
-
-
-
-		cvtColor(edges, frame, COLOR_BGR2GRAY);
-		//imshow("Frame", frame);
-		Mat out_frame;
-		//imshow("Frame", frame);
-		//waitKey(10);
-		out_frame= calc(frame);
-		//imshow("Frame", out_frame);
-		//waitKey(200);
 
 		vector<double> v;
-		v.push_back((double)video_start+1);
+		v.push_back((double)video_frame+1);
 
-		v.push_back(density_total(out_frame, O, 25, thread_tot, arg_struct->number));
+		v.push_back(density_total(outstream[video_frame], O, 25, thread_tot, arg_struct->number));
 
 		arg_struct->file_data.push_back(v);
 
 
-		video_start= video_start+1;
-		char c= (char)waitKey(25);
-		if(c==27 || video_start == 50){
-			break;
-		}
+		video_frame= video_frame+1;
+		
 		
 	}
-	cap.release();
-	destroyAllWindows();
 
 	cout << "Thread :" << arg_struct->number << " finished" <<"\n";
 
@@ -119,6 +90,54 @@ int main(){
 	I = imread("empty.jpg", IMREAD_GRAYSCALE);
 	O = calc(I);
 
+
+	string InputVideo= "trafficvideo.mp4";
+
+
+	int video_start= 0;
+
+	VideoCapture cap(InputVideo);
+	if(!cap.isOpened()){
+		cout << "Error loading the file"<< endl;
+		exit(1);
+	}
+
+	while(1){
+
+		
+		//cout << "Thread :" << arg_struct->number << " in process" <<"\n";
+		//cout<<"Framing number:   ";
+
+		Mat frame;
+		Mat edges;
+		cap >> edges;
+
+
+
+		cvtColor(edges, frame, COLOR_BGR2GRAY);
+		//imshow("Frame", frame);
+		Mat out_frame;
+		//imshow("Frame", frame);
+		//waitKey(10);
+		out_frame= calc(frame);
+		//imshow("Frame", out_frame);
+		//waitKey(200);
+
+		outstream.push_back(out_frame);
+
+
+		video_start= video_start+1;
+		char c= (char)waitKey(25);
+		if(c==27 || video_start == 5722){
+			break;
+		}
+		
+	}
+	cap.release();
+	destroyAllWindows();
+
+
+
 	pthread_t tids[thread_tot];
 	for (int i = 0; i < thread_tot; ++i)
 	{
@@ -143,6 +162,8 @@ int main(){
 	{
 		pthread_join(tids[i], NULL);
 	}
+
+
 
 
 	ofstream fout ("out_method3_thread3.txt");
