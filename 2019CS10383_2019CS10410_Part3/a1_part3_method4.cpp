@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 #include <vector>
 #include "helper.cpp"
 #include <pthread.h>
@@ -11,7 +11,7 @@ using namespace cv;
 using namespace std;
 
 
-int thread_tot= 4;
+int thread_tot= 6;
 
 Mat I,O;
 
@@ -28,6 +28,8 @@ void* imgcalc(void* arg){
 	//Note that this is hard coded for now, to change this 
 	//we will have to pass an extra string argument in imgcalc
 	string InputVideo= "trafficvideo.mp4";
+	cout << "Thread :" << arg_struct->number << " started" <<"\n";
+
 
 	int video_start= 0;
 
@@ -39,11 +41,14 @@ void* imgcalc(void* arg){
 
 	while(1){
 
+		Mat frame;
+		Mat edges;
+		cap >> edges;
+
+
 		if(video_start%thread_tot == arg_struct->number){
-
-
-			Mat frame,edges;
-			cap >> edges;
+			//cout << "Thread :" << arg_struct->number << " in process" <<"\n";
+			//cout<<"Framing number:   ";
 
 
 
@@ -124,7 +129,7 @@ int main(){
 	}
 
 
-	ofstream fout ("out_method4_t4_2.txt");
+	ofstream fout ("out_method4_thread6.txt");
 	fout << "framenum" << "," << "queue density" <<"\n";
 	
 	for (int i = 0; i < thread_tot; ++i)
