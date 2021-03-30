@@ -39,7 +39,7 @@ void* imgcalc(void* arg){
 			vector<double> v;
 			v.push_back((double)video_frame+1);
 
-			v.push_back(density(outstream[video_frame], O, 25, thread_tot, arg_struct->number));
+			v.push_back(density(outstream[video_frame], O, 25));
 
 			arg_struct->file_data.push_back(v);
 		}	
@@ -150,22 +150,16 @@ int main(){
 
 
 
-	ofstream fout ("out_method3_thread3.txt");
+	ofstream fout ("out_method4_type2_thread3.txt");
 	fout << "framenum" << "," << "queue density" <<"\n";
 
-	vector<vector<double>> x= args[0].file_data;
-	
-	for (int j = 0; j < x.size(); ++j)
-	{	
-		double sum= 0;
-		for(int i=0; i<thread_tot; i++){
-
-			sum= sum+ args[i].file_data[j][1];
-		
+	for (int i = 0; i < thread_tot; ++i)
+	{
+		vector<vector<double>> x = args[i].file_data;
+		for (int j = 0; j < x.size(); ++j)
+		{
+			fout << x[j][0] << "," << x[j][1] << "\n";
 		}
-		sum= sum/ (O.rows*O.cols);
-
-		fout << x[j][0] << "," << sum << "\n";
 	}
 
 
