@@ -2,38 +2,38 @@
 #include <iostream>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 #include <vector>
 #include "helper.cpp"
 
 using namespace cv;
 using namespace std;
 
-Mat resize(Mat img){
 
-	Mat res;
-	resize(img, res, Size(160,240), 0, 0, INTER_CUBIC); // resize to 1024x768 resolution;
-	return res;
-
-}
 
 int main(){
+
+	string InputVideo;
+	cin >> InputVideo;
+
+
 	time_t start, end;
 	time(&start);
 	
 
 	Mat I = imread("empty.jpg", IMREAD_GRAYSCALE);
-	Mat O = resize(calc(I));
+	Mat K= calc(I);
+	Mat O;
+
+	resize(K, O, Size(240,360), 0, 0, INTER_NEAREST);
 
 
 	vector<double> queue_density;
 	vector<int> frame_number;
 
-	string InputVideo;
-	cin >> InputVideo;
 	int video_start= 0;
 
-	ofstream fout ("out_method2_160_240.txt");
+	ofstream fout ("out_method2_240_360.txt");
 	fout << "framenum" << "," << "queue density" <<"\n";
 
 	VideoCapture cap(InputVideo);
@@ -55,7 +55,10 @@ int main(){
 		Mat out_frame;
 		//imshow("Frame", frame);
 		//waitKey(10);
-		out_frame= resize(calc(frame));
+
+		Mat out;
+		out= calc(frame);
+		resize(out, out_frame, Size(240,360), 0, 0, INTER_NEAREST);
 		//imshow("Frame", out_frame);
 		//waitKey(200);
 
@@ -81,6 +84,7 @@ int main(){
 		fout << frame_number[k] << "," << queue_density[k]  << "\n";
 	}
 
+
 	fout.close();
 
 	time(&end);
@@ -88,5 +92,6 @@ int main(){
     cout << "Time taken by program is : " << fixed 
          << time_taken << setprecision(5); 
     cout << " sec " << endl;
-	return 0;
+
+	
 }
