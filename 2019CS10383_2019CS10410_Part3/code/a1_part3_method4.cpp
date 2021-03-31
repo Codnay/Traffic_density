@@ -10,35 +10,41 @@
 using namespace cv;
 using namespace std;
 
+//--------Global Variable Declarations-----------
 
-int thread_tot= 6;
-
+int thread_tot;
 Mat I,O;
 
 
+
+
+//-------Helper functions and structs------------
+
+//Struct to be passed as argument to pthreads
 struct thread_number_container
 {
 	int number;
 	vector<vector<double>> file_data;
+	string In;
 };
 
+//Function to be passed as argument to pthread
 void* imgcalc(void* arg){
 
+	//Local variable declarations
 	struct thread_number_container *arg_struct = (struct thread_number_container*) arg;
-	//Note that this is hard coded for now, to change this 
-	//we will have to pass an extra string argument in imgcalc
-	string InputVideo= "trafficvideo.mp4";
-	cout << "Thread :" << arg_struct->number << " started" <<"\n";
-
+	string InputVideo= arg_struct->In;
 
 	int video_start= 0;
 
+	//Opening an instance of the input video
 	VideoCapture cap(InputVideo);
 	if(!cap.isOpened()){
 		cout << "Error loading the file"<< endl;
 		exit(1);
 	}
 
+	//Looping though all the frames of the input video
 	while(1){
 
 		Mat frame;
@@ -47,19 +53,11 @@ void* imgcalc(void* arg){
 
 
 		if(video_start%thread_tot == arg_struct->number){
-			//cout << "Thread :" << arg_struct->number << " in process" <<"\n";
-			//cout<<"Framing number:   ";
-
 
 
 			cvtColor(edges, frame, COLOR_BGR2GRAY);
-			//imshow("Frame", frame);
 			Mat out_frame;
-			//imshow("Frame", frame);
-			//waitKey(10);
 			out_frame= calc(frame);
-			//imshow("Frame", out_frame);
-			//waitKey(200);
 
 			vector<double> v;
 			v.push_back((double)video_start+1);
@@ -76,62 +74,71 @@ void* imgcalc(void* arg){
 		}
 		
 	}
+
+	//closing the instance of the input video
 	cap.release();
 	destroyAllWindows();
 
 	cout << "Thread :" << arg_struct->number << " finished" <<"\n";
 
-	/*for(int k = 0; k < frame_number.size(); k++){
-		//cout << frame_number[k]/15.0 << ", " << queue_density[k] << "\n";
-		fout << frame_number[k] << "," << queue_density[k]  << "\n";
-	}*/
 
 	pthread_exit(0);
 }
 
-int main(){
-	time_t start, end;
-	time(&start);
-	
-	/*vector<int> thread_count;
 
-	for(int i=0 ; i< thread_tot; i++){
-		thread_count.push_back(i);
-	}*/
+int main(){
+
+	//--------------Variable Declarations----------------
+
+	string input;
+	cout << "Input video: ";
+	cin >> input;
+
+	cout << "Number of threads: ";
+	cin >> thread_tot;
+	
 	struct thread_number_container args[thread_tot];
 
+	string out= "out_method4_thread" + to_string(thread_tot) + ".txt";
+
+	time_t start, end;
+
+
+
+
+	//----------------Starting the clock---------------
+	time(&start);
+
+
+
+
+	//---------------Starting the program--------------
 	I = imread("empty.jpg", IMREAD_GRAYSCALE);
 	O = calc(I);
 
+	//Initialising the pthreads
 	pthread_t tids[thread_tot];
 	for (int i = 0; i < thread_tot; ++i)
 	{
 		args[i].number = i;
+		args[i].In= input;
 		pthread_attr_t attr;
 		pthread_attr_init(&attr);
 		pthread_create(&tids[i], &attr, imgcalc, &args[i]);
 	}
 
-	/*thread t1(imgcalc, thread_tot, thread_count[0]);
-	thread t2(imgcalc, thread_tot, thread_count[1]);
-	thread t3(imgcalc, thread_tot, thread_count[2]);
-	thread t4(imgcalc, thread_tot, thread_count[3]);
-
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	*/
-
+	//Joining the pthreads with the main thread
 	for (int i = 0; i < thread_tot; ++i)
 	{
 		pthread_join(tids[i], NULL);
 	}
 
 
-	ofstream fout ("out_method4_thread6.txt");
+	//Opeing the output file
+	ofstream fout (out);
 	fout << "framenum" << "," << "queue density" <<"\n";
 	
+	//Outputting in the output file
 	for (int i = 0; i < thread_tot; ++i)
 	{
 		vector<vector<double>> x = args[i].file_data;
@@ -141,9 +148,13 @@ int main(){
 		}
 	}
 
-
+	//Closing the output file
 	fout.close();
 
+
+
+
+	//----------Closing the clock--------------
 	time(&end);
 	double time_taken = double(end - start); 
     cout << "Time taken by program is : " << fixed 

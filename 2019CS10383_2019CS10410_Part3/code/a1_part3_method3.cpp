@@ -10,13 +10,17 @@
 using namespace cv;
 using namespace std;
 
-
-int thread_tot= 4;
-
+//----------Global Variable Declaration-------------
+int thread_tot;
 vector<Mat> outstream;
-
 Mat I,O;
 
+
+
+
+//---------Helper Functions and Struct---------------
+
+//Function to calculate altered pixels
 double density_total(Mat img1, Mat img2, int th, int total, int k){
 
 	double nz = 0.0;
@@ -34,32 +38,28 @@ double density_total(Mat img1, Mat img2, int th, int total, int k){
 	return(nz);
 }
 
+//Struct to pass as argument to a pthread
 struct thread_number_container
 {
 	int number;
 	vector<vector<double>> file_data;
 };
 
+//Function to pass as argument to a pthread
 void* imgcalc(void* arg){
 
+	//Local variable declarations
 	struct thread_number_container *arg_struct = (struct thread_number_container*) arg;
-	//Note that this is hard coded for now, to change this 
-	//we will have to pass an extra string argument in imgcalc
-
-
 	int video_frame= 0;
 
-
-	while(video_frame < 50){
+	//Looping through an input of frames
+	while(video_frame < 5722){
 
 
 		vector<double> v;
 		v.push_back((double)video_frame+1);
-
 		v.push_back(density_total(outstream[video_frame], O, 25, thread_tot, arg_struct->number));
-
 		arg_struct->file_data.push_back(v);
-
 
 		video_frame= video_frame+1;
 		
@@ -68,76 +68,75 @@ void* imgcalc(void* arg){
 
 	cout << "Thread :" << arg_struct->number << " finished" <<"\n";
 
-	/*for(int k = 0; k < frame_number.size(); k++){
-		//cout << frame_number[k]/15.0 << ", " << queue_density[k] << "\n";
-		fout << frame_number[k] << "," << queue_density[k]  << "\n";
-	}*/
-
 	pthread_exit(0);
 }
 
 int main(){
-	time_t start, end;
-	time(&start);
-	
-	/*vector<int> thread_count;
 
-	for(int i=0 ; i< thread_tot; i++){
-		thread_count.push_back(i);
-	}*/
+	//--------------Variable Declarations----------------
+	time_t start, end;
+
+	string InputVideo;
+	cout << "Input Video: ";
+	cin >> InputVideo;
+	
+	cout << "Number of threads: ";
+	cin >> thread_tot;
+
 	struct thread_number_container args[thread_tot];
 
+	string out= "out_method3_thread" + to_string(thread_tot) + ".txt";
+	int video_start= 0;
+
+
+
+
+	//---------------Starting the clock-------------------
+	time(&start);
+
+
+
+
+	//--------------Starting the program------------------
 	I = imread("empty.jpg", IMREAD_GRAYSCALE);
 	O = calc(I);
 
-
-	string InputVideo= "trafficvideo.mp4";
-
-
-	int video_start= 0;
-
+	//Opening the input video
 	VideoCapture cap(InputVideo);
 	if(!cap.isOpened()){
 		cout << "Error loading the file"<< endl;
 		exit(1);
 	}
 
+	//Looping through the input video and storing transformed images
 	while(1){
 
-		
-		//cout << "Thread :" << arg_struct->number << " in process" <<"\n";
-		//cout<<"Framing number:   ";
-
+		//Local variable declarations
 		Mat frame;
 		Mat edges;
 		cap >> edges;
 
-
-
 		cvtColor(edges, frame, COLOR_BGR2GRAY);
-		//imshow("Frame", frame);
 		Mat out_frame;
-		//imshow("Frame", frame);
-		//waitKey(10);
 		out_frame= calc(frame);
-		//imshow("Frame", out_frame);
-		//waitKey(200);
 
 		outstream.push_back(out_frame);
 
-
 		video_start= video_start+1;
+
+		//Ending the video if reached the end or user presses escape
 		char c= (char)waitKey(25);
-		if(c==27 || video_start == 50){
+		if(c==27 || video_start == 5722){
 			break;
 		}
 		
 	}
+
+	//Closing the input video
 	cap.release();
 	destroyAllWindows();
 
-
-
+	//Initialising the pthreads
 	pthread_t tids[thread_tot];
 	for (int i = 0; i < thread_tot; ++i)
 	{
@@ -147,46 +146,37 @@ int main(){
 		pthread_create(&tids[i], &attr, imgcalc, &args[i]);
 	}
 
-	/*thread t1(imgcalc, thread_tot, thread_count[0]);
-	thread t2(imgcalc, thread_tot, thread_count[1]);
-	thread t3(imgcalc, thread_tot, thread_count[2]);
-	thread t4(imgcalc, thread_tot, thread_count[3]);
-
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	*/
-
+	//Joining the pthreads to the main thread
 	for (int i = 0; i < thread_tot; ++i)
 	{
 		pthread_join(tids[i], NULL);
 	}
 
-
-
-
-	ofstream fout ("out_method3_thread4.txt");
+	//Opening the output file
+	ofstream fout (out);
 	fout << "framenum" << "," << "queue density" <<"\n";
 
 	vector<vector<double>> x= args[0].file_data;
 	
+	//Outputting in the output file
 	for (int j = 0; j < x.size(); ++j)
 	{	
 		double sum= 0;
 		for(int i=0; i<thread_tot; i++){
-
 			sum= sum+ args[i].file_data[j][1];
 		
 		}
 		sum= sum/ (O.rows*O.cols);
-
 		fout << x[j][0] << "," << sum << "\n";
 	}
 
-
+	//Closing the output file
 	fout.close();
 
+
+
+
+	//----------Closing the clock--------------
 	time(&end);
 	double time_taken = double(end - start); 
     cout << "Time taken by program is : " << fixed 
