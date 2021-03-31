@@ -10,49 +10,65 @@ using namespace cv;
 using namespace std;
 
 int main(){
-	time_t start, end;
-	time(&start);
-	
 
-	Mat I = imread("empty.jpg", IMREAD_GRAYSCALE);
-	Mat O = calc(I);
+
+	//----------Variable Declarations-------------
+	
+	Mat I, O;
+	int video_start= 0;
 
 	vector<double> queue_density;
 	vector<int> frame_number;
 
 	string InputVideo;
+	cout << "Enter the name of input video: ";
 	cin >> InputVideo;
-	int video_start= 0;
 
-	ofstream fout ("out_method1_x8.txt");
+	int x;
+	cout << "Enter the number of frames that must be skipped: ";
+	cin >> x;
+
+	string out= "out_method1_x" + x + ".txt";
+
+	time_t start, end;
+
+
+
+	//------------Starting the clock----------------
+
+	time(&start);
+
+
+
+
+	//-----------Starting the program----------------
+
+	//Storing the baseline image after performing cropping and homography
+	I = imread("empty.jpg", IMREAD_GRAYSCALE);
+	O = calc(I);
+
+	//Opening the output file
+	ofstream fout (out);
 	fout << "framenum" << "," << "queue density" <<"\n";
 
+	//Opening the input video
 	VideoCapture cap(InputVideo);
 	if(!cap.isOpened()){
 		cout << "Error loading the file"<< endl;
 		return -1;
 	}
 
-	int x = 8;
-	int iterator = 0;
-
+	//Looping through all the frames of the input video
 	while(1){
-
 
 		Mat frame,edges;
 		cap >> edges;
 
-		if(iterator%x == 0){
+		if(video_start%x == 0){
 
 			cvtColor(edges, frame, COLOR_BGR2GRAY);
-			//imshow("Frame", frame);
 			Mat out_frame;
-			//imshow("Frame", frame);
-			//waitKey(10);
 			out_frame= calc(frame);
-			//imshow("Frame", out_frame);
-			//waitKey(200);
-
 			queue_density.push_back(density(out_frame, O, 25));
 
 
@@ -63,26 +79,33 @@ int main(){
 
 		frame_number.push_back(video_start+1);
 
-
-		iterator++;
 		video_start= video_start+1;
+
+		//Ending the loop if we reach the end of the video or user presses escape
 		char c= (char)waitKey(25);
 		if(c==27 || video_start == 5722){
 			break;
 		}
 		
 	}
+
+	//Closing the input video
 	cap.release();
 	destroyAllWindows();
 
-	//cout << "time (in secs)" << ", " << "queue density" <<"\n";
 
+	//Outputting the obtained values in the given output file
 	for(int k = 0; k < frame_number.size(); k++){
-		//cout << frame_number[k]/15.0 << ", " << queue_density[k] << "\n";
 		fout << frame_number[k] << "," << queue_density[k]  << "\n";
 	}
 
+	//Closing the output file
 	fout.close();
+
+
+
+
+	//---------------Ending the clock-------------------
 
 	time(&end);
 	double time_taken = double(end - start); 
