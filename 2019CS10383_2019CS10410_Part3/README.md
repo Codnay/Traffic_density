@@ -21,6 +21,7 @@ To run the compiled file use corresponding run commands like
 
 ## For the utility code enter the name of baseline output 1st and then enter the name of the output file under consideration 
 ## Graph.py generates graph for given csv data.
+## Graph.csv is a sample input file for graph generation
 
 To remove the generated files
 ```make clean```

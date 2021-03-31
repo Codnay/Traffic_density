@@ -34,9 +34,11 @@ void print(vector<vector<int> > a){
 
 int main(){
 	string s;
+	cout << "First file: ";
 	cin >> s;
 
 	string k;
+	cout << "Second file: ";
 	cin >> k;
 
 	string line;
