@@ -112,10 +112,12 @@ int main(){
 	//vector<vector<int> > c;
 
 	double total=0.0;
+	double avg = 0.0;
 	for(int i= 0; i<second.size()-1; i++){
 		
 		//cout<< a[i][1] << " " << b[i][1] << endl;
-		total+=  (a[i][1] - b[i][1])*(a[i][1] - b[i][1]);
+		total+=  (double)((a[i][1] - b[i][1])*(a[i][1] - b[i][1]))/(a[i][1]*a[i][1]);
+		avg += a[i][1];
 
 		//vector<int> rand;
 		//rand.push_back(a[i][0]);
@@ -125,7 +127,9 @@ int main(){
 	}
 
 	//print(c);
-	cout << pow((double)total/(second.size()-1), 0.5) << endl;
+	cout << (pow((double)total/(second.size()-1), 0.5))*100 << endl;
+	cout << "avg density in part2: " << avg/(second.size() - 1) << endl;
+	cout << "Median of density in part2: " << a[second.size()/2][1] << endl;
 
 	return 0;
 
