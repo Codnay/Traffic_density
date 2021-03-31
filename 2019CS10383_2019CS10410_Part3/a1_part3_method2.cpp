@@ -53,8 +53,8 @@ int main(){
 
 
 	//Storing the baseline image after performing cropping ,homography and resizing
-	Mat I = imread("empty.jpg", IMREAD_GRAYSCALE);
-	Mat K= calc(I);
+	imread("empty.jpg", IMREAD_GRAYSCALE);
+	calc(I);
 	resize(K, O, Size(x,y), 0, 0, INTER_NEAREST);
 
 	//Opening the output file
