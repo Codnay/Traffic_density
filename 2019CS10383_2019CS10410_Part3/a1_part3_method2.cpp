@@ -13,79 +13,105 @@ using namespace std;
 
 int main(){
 
+
+	//-----------Variable Declarations-------------
+
+	Mat I, K, O;
+
 	string InputVideo;
+	cout << "Input video: ";
 	cin >> InputVideo;
-
-
-	time_t start, end;
-	time(&start);
-	
-
-	Mat I = imread("empty.jpg", IMREAD_GRAYSCALE);
-	Mat K= calc(I);
-	Mat O;
-
-	resize(K, O, Size(240,360), 0, 0, INTER_NEAREST);
-
 
 	vector<double> queue_density;
 	vector<int> frame_number;
 
 	int video_start= 0;
 
-	ofstream fout ("out_method2_240_360.txt");
+	int x;
+	cout << "X: ";
+	cin >> x;
+
+	int y;
+	cout << "Y: ";
+	cin >> y;
+
+	string out= "out_method2_" + to_string(x) + "_" + to_string(y) + ".txt";
+
+	time_t start, end;
+
+
+
+
+	//------------Starting the clock----------------
+
+	time(&start);
+
+
+	
+
+	//-----------Starting the program----------------
+
+
+	//Storing the baseline image after performing cropping ,homography and resizing
+	Mat I = imread("empty.jpg", IMREAD_GRAYSCALE);
+	Mat K= calc(I);
+	resize(K, O, Size(x,y), 0, 0, INTER_NEAREST);
+
+	//Opening the output file
+	ofstream fout (out);
 	fout << "framenum" << "," << "queue density" <<"\n";
 
+	//Opening the input video
 	VideoCapture cap(InputVideo);
 	if(!cap.isOpened()){
 		cout << "Error loading the file"<< endl;
 		return -1;
 	}
 
+	//Looping through all the frames in the input video
 	while(1){
 
 
 		Mat frame,edges;
 		cap >> edges;
 
-
-
 		cvtColor(edges, frame, COLOR_BGR2GRAY);
-		//imshow("Frame", frame);
 		Mat out_frame;
-		//imshow("Frame", frame);
-		//waitKey(10);
 
 		Mat out;
 		out= calc(frame);
-		resize(out, out_frame, Size(240,360), 0, 0, INTER_NEAREST);
-		//imshow("Frame", out_frame);
-		//waitKey(200);
+		resize(out, out_frame, Size(x,y), 0, 0, INTER_NEAREST);
 
 		queue_density.push_back(density(out_frame, O, 25));
-
 
 		frame_number.push_back(video_start+1);
 
 		video_start= video_start+1;
+
+		//Ending the loop if we reach the end of the video or if user enters escape
 		char c= (char)waitKey(25);
 		if(c==27 || video_start == 5722){
 			break;
 		}
 		
 	}
+
+	//Closing the input video
 	cap.release();
 	destroyAllWindows();
 
-	cout << "time (in secs)" << ", " << "queue density" <<"\n";
-
+	//Outputting the obtained values in the given output file
 	for(int k = 0; k < frame_number.size(); k++){
-		//cout << frame_number[k]/15.0 << ", " << queue_density[k] << "\n";
 		fout << frame_number[k] << "," << queue_density[k]  << "\n";
 	}
 
-
+	//Closing the output file
 	fout.close();
+
+
+
+	
+	//---------------Ending the clock-------------------
 
 	time(&end);
 	double time_taken = double(end - start); 
