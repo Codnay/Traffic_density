@@ -83,7 +83,7 @@ int main(){
 
 		//Ending the loop if we reach the end of the video or user presses escape
 		char c= (char)waitKey(25);
-		if(c==27 || video_start == 50){
+		if(c==27 || video_start == 5722){
 			break;
 		}
 		
