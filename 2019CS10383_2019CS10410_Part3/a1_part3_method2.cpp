@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-//#include <bits/stdc++.h>
 #include <vector>
 #include "helper.cpp"
 
@@ -53,8 +52,8 @@ int main(){
 
 
 	//Storing the baseline image after performing cropping ,homography and resizing
-	imread("empty.jpg", IMREAD_GRAYSCALE);
-	calc(I);
+	I = imread("empty.jpg", IMREAD_GRAYSCALE);
+	K= calc(I);
 	resize(K, O, Size(x,y), 0, 0, INTER_NEAREST);
 
 	//Opening the output file
