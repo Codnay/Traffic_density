@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-#include <bits/stdc++.h>
 #include <vector>
 #include "helper.cpp"
 
@@ -28,7 +27,8 @@ int main(){
 	cout << "Enter the number of frames that must be skipped: ";
 	cin >> x;
 
-	string out= "out_method1_x" + x + ".txt";
+
+	string out= "out_method1_x" + to_string(x) + ".txt";
 
 	time_t start, end;
 
@@ -73,7 +73,7 @@ int main(){
 
 
 		}else{
-			queue_density.push_back(queue_density[iterator-1]);
+			queue_density.push_back(queue_density[video_start-1]);
 			
 		}
 
@@ -83,7 +83,7 @@ int main(){
 
 		//Ending the loop if we reach the end of the video or user presses escape
 		char c= (char)waitKey(25);
-		if(c==27 || video_start == 5722){
+		if(c==27 || video_start == 50){
 			break;
 		}
 		
