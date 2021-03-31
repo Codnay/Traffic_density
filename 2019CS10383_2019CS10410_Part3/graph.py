@@ -1,15 +1,16 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits import mplot3d
-"""
-ax = plt.gca()
-data = {"Threads":[2,3,4,5,6,7,8], "Runtime(s)": [286,273,273,277,286,311,332], "Baseline(s)":[352,352,352,352,352,352,352]}
 
-df = pd.DataFrame(data,columns =["Threads","Runtime(s)","Baseline(s)"])
+s = input("Enter the name of csv file: ")
+X = input("Enter the column head name for x-axis: ")
+Y = input("Enter the column head name for y-axis: ")
+data = pd.read_csv(s)
 
-df.plot(x="Threads", y = "Runtime(s)", kind = "line", color= 'blue', ax = ax)
-df.plot(x="Threads", y = "Baseline(s)", kind = "line", color= 'red', ax = ax)
+df = pd.DataFrame(data)
+
+df.plot(x=X, y = Y, kind = "line")
+
 plt.show()
 
 """
@@ -27,3 +28,8 @@ z = [1,2,3,4,5,6,7,8,10,12,14,16]
 
 ax.plot3D(x,y,z, 'blue')
 plt.show()
+"""
+"""
+"Utility(\%error)":['0\n(x = 1)','1.12\n(x = 2)','1.67\n(x = 3)','2.63\n(x = 4)','3.28\n(x = 5)','3.95\n(x = 6)','4.75\n(x = 7)','5.60\n(x = 8)','6.90\n(x = 10)','8.31\n(x = 12)',
+'9.21\n(x = 14)','10.94\n(x = 16)']
+"""
