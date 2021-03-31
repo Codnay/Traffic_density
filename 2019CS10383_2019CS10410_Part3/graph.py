@@ -11,7 +11,8 @@ df = pd.DataFrame(data)
 
 df.plot(x=X, y = Y, kind = "line")
 
-plt.show()
+#plt.show()
+plt.savefig("result.png")
 
 """
 
