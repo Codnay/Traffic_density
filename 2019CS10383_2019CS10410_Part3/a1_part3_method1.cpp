@@ -20,11 +20,11 @@ int main(){
 	vector<int> frame_number;
 
 	string InputVideo;
-	cout << "Enter the name of input video: ";
+	cout << "Input video: ";
 	cin >> InputVideo;
 
 	int x;
-	cout << "Enter the number of frames that must be skipped: ";
+	cout << "Number of frames that must be skipped: ";
 	cin >> x;
 
 
