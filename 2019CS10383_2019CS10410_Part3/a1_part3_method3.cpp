@@ -11,7 +11,7 @@ using namespace cv;
 using namespace std;
 
 
-int thread_tot= 3;
+int thread_tot= 4;
 
 vector<Mat> outstream;
 
@@ -50,7 +50,7 @@ void* imgcalc(void* arg){
 	int video_frame= 0;
 
 
-	while(video_frame < 5722){
+	while(video_frame < 50){
 
 
 		vector<double> v;
@@ -128,7 +128,7 @@ int main(){
 
 		video_start= video_start+1;
 		char c= (char)waitKey(25);
-		if(c==27 || video_start == 5722){
+		if(c==27 || video_start == 50){
 			break;
 		}
 		
@@ -166,7 +166,7 @@ int main(){
 
 
 
-	ofstream fout ("out_method3_thread3.txt");
+	ofstream fout ("out_method3_thread4.txt");
 	fout << "framenum" << "," << "queue density" <<"\n";
 
 	vector<vector<double>> x= args[0].file_data;
