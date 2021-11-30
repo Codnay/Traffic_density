@@ -14,5 +14,5 @@ To run the compiled file
 ## Select 4 points, in the popped up image window, in an anti-clockwise fashion starting from the left-upper corner, with the right or left mouse click and then press enter to get the transformed image. Press enter again to get the final cropped image. 
 ## Both the final transformed and cropped images are saved in the same directory.
 
-To remove the generated files
+To remove all the generated files
 ```make clean```
